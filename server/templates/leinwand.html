@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leinwand Collage</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f0f0f0;
+        }
+
+        #collage {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 90%;
+            margin: 20px auto;
+        }
+
+        #collage img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leinwand-Collage</h1>
+    <div id="collage"></div>
+
+    <script>
+        const socket = io();
+        const collage = document.getElementById('collage');
+
+        // Funktion zum Hinzufügen eines neuen Bildes zur Collage
+        socket.on('new_image', data => {
+            const img = document.createElement('img');
+            img.src = data.image_path;
+            img.alt = data.username;
+            collage.appendChild(img);
+
+            // Begrenzung der Collage auf 16 Bilder (4x4)
+            if (collage.children.length >= 16) {
+                alert('Collage ist voll! Neue Collage wird gestartet...');
+                collage.innerHTML = ''; // Alte Collage leeren
+            }
+        });
+
+        // Benachrichtigung, dass die Collage gespeichert wurde
+        socket.on('collage_saved', data => {
+            alert(data.message);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamera - Foto hochladen</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #upload-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #upload-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bild hochladen</h1>
+    <p>Klicke unten, um ein Bild von deinem Gerät hochzuladen und es zur Leinwand zu senden.</p>
+
+    <input type="file" id="file-input" accept="image/*">
+    <button id="upload-btn">Bild auswählen und hochladen</button>
+
+    <script>
+        const uploadButton = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+
+        uploadButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('username', 'Test-Benutzer'); // Temporärer Benutzername
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    alert('Bild wurde erfolgreich hochgeladen!');
+                } else {
+                    alert('Fehler beim Hochladen des Bildes.');
+                }
+            } catch (error) {
+                console.error('Fehler beim Hochladen:', error);
+                alert('Fehler beim Hochladen.');
+            }
+
+            // Zurücksetzen des Dateieingabe-Felds
+            fileInput.value = '';
+        });
+    </script>
+</body>
+</html>
