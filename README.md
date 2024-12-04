@@ -1,7 +1,3 @@
-# Projekt
-
-### Kevin Haltiner
-
 # Benötigte Hardware für das Projekt: Bilder Collage
 
 ## 1. Rechner für den Server (Backend)
