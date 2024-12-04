@@ -48,22 +48,18 @@
 
         // Funktion zum Hinzufügen eines neuen Bildes zur Collage
         socket.on('new_image', data => {
-            const img = document.createElement('img');
-            img.src = data.image_path;
-            img.alt = data.username;
-            collage.appendChild(img);
+        console.log('Neues Bild empfangen:', data);  // Zeigt den empfangenen Dateninhalt an
+        const img = document.createElement('img');
+        img.src = data.image_path;
+        img.alt = data.username;
+        collage.appendChild(img);
 
-            // Begrenzung der Collage auf 16 Bilder (4x4)
-            if (collage.children.length >= 16) {
-                alert('Collage ist voll! Neue Collage wird gestartet...');
-                collage.innerHTML = ''; // Alte Collage leeren
-            }
-        });
+        if (collage.children.length >= 16) {
+            alert('Collage ist voll! Neue Collage wird gestartet...');
+            collage.innerHTML = ''; // Alte Collage leeren
+        }
+    });
 
-        // Benachrichtigung, dass die Collage gespeichert wurde
-        socket.on('collage_saved', data => {
-            alert(data.message);
-        });
     </script>
 </body>
 </html>
