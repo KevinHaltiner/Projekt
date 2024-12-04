@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild Collage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        #textContainer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #canvas {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        img {
+            max-width: 150px;
+            max-height: 150px;
+            margin: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #cameraInput {
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Willkommen zur Bild Collage!</h1>
+
+    <!-- Text Container -->
+    <div id="textContainer">
+        <p>Diese Webseite zeigt eine Collage von Bildern. Du kannst ein Bild aufnehmen und es der Collage hinzufügen, indem du auf den Button unten klickst.</p>
+        <p>Jedes Bild wird sofort auf der Leinwand angezeigt.</p>
+    </div>
+
+    <!-- Knopf zum Bild aufnehmen -->
+    <button onclick="startCamera()">Bild aufnehmen</button>
+
+    <!-- Input zum Bild hochladen -->
+    <input type="file" accept="image/*" capture="camera" id="cameraInput" onchange="uploadImage()">
+
+    <!-- Leinwand für die Bilder -->
+    <div id="canvas"></div>
+
+    <script>
+        var socket = io();
+
+        // Wenn ein neues Bild hochgeladen wird, wird es auf der Leinwand angezeigt
+        socket.on('new_image', function(data) {
+            var imgElement = document.createElement("img");
+            imgElement.src = data.img_path;
+            document.getElementById("canvas").appendChild(imgElement);
+        });
+
+        // Funktion, um die Kamera zu starten
+        function startCamera() {
+            var cameraInput = document.getElementById('cameraInput');
+            cameraInput.click();  // Öffnet die Kamera für die Bildaufnahme
+        }
+
+        // Funktion zum Hochladen des Bildes
+        function uploadImage() {
+            var input = document.getElementById("cameraInput");
+            var file = input.files[0];
+
+            if (file) {
+                var formData = new FormData();
+                formData.append("image", file);
+
+                // Bild an den Server senden (POST-Request)
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Bild erfolgreich hochgeladen!");
+                    } else {
+                        console.log("Fehler beim Hochladen des Bildes.");
+                    }
+                })
+                .catch(error => {
+                    console.log("Fehler beim Hochladen:", error);
+                });
+            } else {
+                alert("Bitte ein Bild auswählen!");
+            }
+        }
+    </script>
+</body>
+</html>
